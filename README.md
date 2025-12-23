@@ -1,18 +1,26 @@
 # ⚙️ C++ Multithreaded Producer–Consumer System
 
-A high-performance implementation of the classic **Producer–Consumer** concurrency problem using **C++ threads, mutex, condition variables, and a thread-safe bounded buffer**. The project demonstrates strong understanding of operating systems concepts, synchronization primitives, race conditions, and concurrent task execution.
+A high-performance, thread-safe implementation of the classic **Producer–Consumer** concurrency problem using **modern C++ (C++17)**.  
+The system uses **blocking synchronization (no busy-waiting)** with `std::mutex` and `std::condition_variable` to safely coordinate multiple producer and consumer threads over a **bounded buffer**.
+
+This project demonstrates a strong practical understanding of **Operating Systems fundamentals**, including synchronization, race-condition prevention, and efficient inter-thread communication.
 
 ---
 
-## 🚀 Features
+## 🚀 Key Features
 
 - Multi-threaded producer and consumer workers  
-- Thread-safe **bounded buffer (queue)**  
-- Synchronization using:  
-  - `std::mutex`  
-  - `std::condition_variable`  
-- Prevents race conditions and deadlocks  
-- Supports configurable production/consumption rates  
+- Thread-safe bounded buffer (FIFO queue)  
+- Efficient synchronization using:
+  - `std::mutex` for mutual exclusion  
+  - `std::condition_variable` for blocking and signalling  
+- No busy-waiting → optimal CPU utilization  
+- Prevents race conditions, deadlocks, and lost wakeups  
+- Constant-time enqueue and dequeue operations  
+- Configurable:
+  - Buffer capacity  
+  - Number of producers and consumers  
+  - Production and consumption rates  
 - Clean, modular, and extensible C++ design  
 
 ---
@@ -21,10 +29,21 @@ A high-performance implementation of the classic **Producer–Consumer** concurr
 
 - Concurrency and multithreading  
 - Critical sections and mutual exclusion  
-- Condition variable signalling (`wait`, `notify_one`, `notify_all`)  
-- Bounded-buffer (producer–consumer) problem  
-- Thread coordination  
-- Avoiding deadlocks and spurious wakeups  
+- Condition variable signalling:
+  - `wait(lock, predicate)`  
+  - `notify_one`  
+- Bounded-buffer (Producer–Consumer) problem  
+- Thread coordination and blocking  
+- Avoiding race conditions, deadlocks, and spurious wakeups  
+
+---
+
+## 🏗️ Design Decisions
+
+- Used `wait(lock, predicate)` to safely handle spurious wakeups  
+- Employed blocking synchronization instead of busy-waiting for performance  
+- Separated producer, consumer, and buffer logic for clear modularity  
+- Bounded buffer enforces back-pressure when producers outpace consumers  
 
 ---
 
@@ -33,82 +52,11 @@ A high-performance implementation of the classic **Producer–Consumer** concurr
 ```plaintext
 cpp-producer-consumer/
 │── src/
-│   ├── main.cpp                 # Entry point
-│   ├── producer.cpp             # Producer thread implementation
-│   ├── consumer.cpp             # Consumer thread implementation
-│   ├── bounded_buffer.cpp       # Thread-safe queue
-│   └── bounded_buffer.h         # Header for buffer
-│── README.md                    # Documentation
-│── Makefile                     # Build instructions (optional)
+│   ├── main.cpp                 # Program entry point
+│   ├── producer.cpp             # Producer thread logic
+│   ├── consumer.cpp             # Consumer thread logic
+│   ├── bounded_buffer.cpp       # Thread-safe bounded queue
+│   └── bounded_buffer.h         # Buffer interface
+│── README.md                    # Project documentation
+│── Makefile                     # Build instructions
 ```
-
----
-
-## ▶️ How It Works
-
-### Producer
-- Generates items (integers/tasks)  
-- Waits if buffer is full  
-- Pushes items into the thread-safe queue  
-
-### Consumer
-- Waits if buffer is empty  
-- Pops items from the queue  
-- Processes each item  
-
-### Synchronization
-- `mutex` protects shared data  
-- `condition_variable` coordinates waiting & wake-up  
-- Prevents busy-waiting, ensures efficient CPU usage  
-
----
-
-## 🛠️ Build & Run
-
-### 1️⃣ Compile the project
-Using g++:
-
-```bash
-g++ src/*.cpp -pthread -o producer_consumer
-```
-
-### 2️⃣ Run the executable
-```bash
-./producer_consumer
-```
-
----
-
-## 📥 Example Output
-
-```
-Producer 1 produced item: 42
-Consumer consumed item: 42
-Producer 1 produced item: 57
-Consumer consumed item: 57
-...
-```
-
-Shows proper synchronization between threads.
-
----
-
-## 🎯 Use Cases
-
-- Operating system simulations  
-- Multithreaded task pipelines  
-- Real-time processing systems  
-- Understanding thread synchronization  
-
----
-
-## 🤝 Contributions
-
-Suggestions and improvements are welcome!  
-Feel free to open issues or submit PRs.
-
----
-
-## 📜 License
-
-Released under the **MIT License**.
